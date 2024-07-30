@@ -34,7 +34,7 @@ https://user-images.githubusercontent.com/64803043/118666705-02735600-b811-11eb-
 
 ```bash
     $ python -m venv venv
-    $ source venv/Scripts/activate
+    $ source venv/bin/activate
     (venv) pip install -r requirements.txt
     (venv) cd Django_Social_Network_App
     (venv) python manage.py makemigrations

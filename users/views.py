@@ -14,6 +14,7 @@ import requests
 from django.conf import settings
 from friend.utils import get_friend_request_or_false
 from friend.friend_request_status import FriendRequestStatus
+from myproject.settings import USE_RECAPTCHA
 
 
 @receiver(user_logged_in)
@@ -55,22 +56,26 @@ def register(request):
         if form.is_valid():
 
             # reCAPTCHA V2
-            recaptcha_response = request.POST.get('g-recaptcha-response')
-            data = {
-                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-                'response': recaptcha_response
-            }
-            r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-            result = r.json()
+            if settings.USE_RECAPTCHA:
+                recaptcha_response = request.POST.get('g-recaptcha-response')
+                data = {
+                    'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+                    'response': recaptcha_response
+                }
+                r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+                result = r.json()
 
-            if result['success']:
+                if result['success']:
+                    form.save()
+                    username = form.cleaned_data.get('username')
+                    messages.success(request, f"Your account has been created! You can login now")
+                    return redirect('login')
+                else:
+                    messages.error(request, 'Invalid reCAPTCHA. Please try again.')            
+            else:
                 form.save()
-                username = form.cleaned_data.get('username')
                 messages.success(request, f"Your account has been created! You can login now")
                 return redirect('login')
-            else:
-                messages.error(request, 'Invalid reCAPTCHA. Please try again.')            
-            
     else:
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form':form})
@@ -101,6 +106,7 @@ def profile(request):
 
 
 """ Creating a public profile view """
+@login_required
 def public_profile(request, username):
     user = User.objects.get(username=username)
     return render(request, 'users/public_profile.html', {"cuser":user})

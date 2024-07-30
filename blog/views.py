@@ -19,6 +19,7 @@ from blog.utils import is_ajax
 
 
 """ Home page with all posts """
+@login_required
 def first(request):
     context = {
         'posts':Post.objects.all()
@@ -145,6 +146,7 @@ def LikeCommentView(request): # , id1, id2              id1=post.pk id2=reply.pk
 
 
 """ Home page with all posts """
+
 class PostListView(ListView):
     model = Post
     template_name = 'blog/home.html' 
@@ -165,6 +167,7 @@ class PostListView(ListView):
 
 
 """ All the posts of the user """
+
 class UserPostListView(ListView):
     model = Post
     template_name = 'blog/user_posts.html' 
@@ -178,6 +181,7 @@ class UserPostListView(ListView):
 
 
 """ Post detail view """
+@login_required
 def PostDetailView(request,pk):
 
     stuff = get_object_or_404(Post, id=pk)
@@ -293,6 +297,7 @@ def about(request):
 
 
 """ Search by post title or username """
+@login_required
 def search(request):
     query = request.GET['query']
     if len(query) >= 150 or len(query) < 1:

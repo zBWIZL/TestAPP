@@ -44,7 +44,7 @@ class ProfileUpdateForm(forms.ModelForm):
         if x and y and w and h:
             image = Image.open(img.image)
             cropped_image = image.crop((x, y, w+x, h+y))
-            resized_image = cropped_image.resize((300, 300), Image.ANTIALIAS)
+            resized_image = cropped_image.resize((300, 300), Image.LANCZOS)
             resized_image.save(img.image.path)
 
         return img

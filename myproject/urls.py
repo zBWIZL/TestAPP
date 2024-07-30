@@ -15,33 +15,41 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
+from django.views.generic import RedirectView
 from django.urls import path, include
 from users import views as user_views
 from django.conf import settings
 from django.conf.urls.static import static
 
-
+#def protected_include(urls):
+    #return include((urls, 'chat'), namespace='chat')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('register/', user_views.register, name='register'),
-    path('profile/', user_views.profile, name='profile'),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
-    path('password-reset/', auth_views.PasswordResetView.as_view(template_name='users/password_reset.html'), name='password_reset'),
-    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='users/password_reset_done.html'), name='password_reset_done'),
-    path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='users/password_reset_confirm.html'), name='password_reset_confirm'),
-    path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html'), name='password_reset_complete'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='register'), name='logout'),
+
+    # Protect the following paths so only logged-in users can access them
+    path('profile/', login_required(user_views.profile), name='profile'),
+    path('password-reset/', login_required(auth_views.PasswordResetView.as_view(template_name='users/password_reset.html')), name='password_reset'),
+    path('password-reset/done/', login_required(auth_views.PasswordResetDoneView.as_view(template_name='users/password_reset_done.html')), name='password_reset_done'),
+    path('password-reset-confirm/<uidb64>/<token>/', login_required(auth_views.PasswordResetConfirmView.as_view(template_name='users/password_reset_confirm.html')), name='password_reset_confirm'),
+    path('password-reset-complete/', login_required(auth_views.PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html')), name='password_reset_complete'),
     
-    path('accounts/', include('allauth.urls')),
-    
+    #path('blog/', include('blog.urls')),
+    # All other paths redirect to register if not logged in
     path('', include('blog.urls')),
-    path('user/', include('users.urls')),
+
+    # Include other apps with login required
+    path('accounts/', include('allauth.urls')),
+    path('users/', include('users.urls')),
     path('notifications/', include('notification.urls')),
-    path('chats/', include('chat.urls')),
-    path('vc/', include('videocall.urls')),
-    path('friend/', include('friend.urls', namespace='friend')),
+    path('chat/', include(('chat.urls', 'chat'), namespace='chat')),
+    path('vc/', include(('videocall.urls', 'videocall'), namespace='videocall')),
+    path('friend/', include(('friend.urls', 'friend'), namespace='friend')),
 ]
 
 if settings.DEBUG:

@@ -1,8 +1,9 @@
 from django.urls import path
 from . import views
 
+app_name = 'videocall'
 urlpatterns = [
-    path('', views.lobby, name='vc-lobby'),
+    path('vc', views.lobby, name='vc-lobby'),
     path('room/', views.room, name='vc-room'),
     path('get_token/', views.getToken),
 

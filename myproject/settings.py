@@ -40,6 +40,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'crispy_forms',
     'django_cleanup',
+    'crispy_bootstrap4',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,9 +54,9 @@ INSTALLED_APPS = [
     'ckeditor',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.github',
+    #'allauth.socialaccount',
+    #'allauth.socialaccount.providers.google',
+    #'allauth.socialaccount.providers.github',
     'blog.apps.BlogConfig',
     'users.apps.UsersConfig',
     'notification',
@@ -73,6 +74,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'myproject.urls'
@@ -93,12 +95,14 @@ TEMPLATES = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
+#AUTHENTICATION_BACKENDS = [
+#    'django.contrib.auth.backends.ModelBackend',
+#    'allauth.account.auth_backends.AuthenticationBackend',
+#]
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
+
+USE_RECAPTCHA = False # Set to True to use reCAPTCHA
 
 
 # Database
@@ -167,7 +171,7 @@ MEDIA_URL = '/media/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'blog-home'
-LOGIN_URL = 'account_login'
+LOGIN_URL = 'login'
 
 CKEDITOR_CONFIGS = {
     'default': {
@@ -202,21 +206,21 @@ CHANNEL_LAYERS = {
 
 SITE_ID = 2     # considering 2nd site in 'Sites' to be 127.0.0.1 (for dev)
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    },
-    'github': {
-        'SCOPE': [
-            'user',
-            'repo',
-            'read:org',
-        ],
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': [
+#             'profile',
+#             'email',
+#         ],
+#         'AUTH_PARAMS': {
+#             'access_type': 'online',
+#         }
+#     },
+#     'github': {
+#         'SCOPE': [
+#             'user',
+#             'repo',
+#             'read:org',
+#         ],
+#     }
+# }
